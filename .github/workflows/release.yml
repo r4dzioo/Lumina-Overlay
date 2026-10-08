@@ -1,0 +1,90 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-2022
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Resolve version
+        id: version
+        shell: pwsh
+        run: |
+          $tag = "${{ github.ref_name }}"
+          if ($tag -match '^v') { $version = $tag.Substring(1) } else { $version = (Get-Content VERSION).Trim() }
+          "version=$version" >> $env:GITHUB_OUTPUT
+          "tag=v$version" >> $env:GITHUB_OUTPUT
+
+      - name: Configure overlay
+        run: cmake -S . -B build -A x64 -DOVERLAY_FETCH_DEPS=ON
+
+      - name: Build overlay
+        run: cmake --build build --config Release --parallel
+
+      - name: Publish launcher
+        run: dotnet publish launcher/Launcher/Launcher.csproj -c Release -r win-x64 --self-contained true -o releases/package
+
+      - name: Stage overlay
+        shell: pwsh
+        run: |
+          Copy-Item build/overlay/Release/Overlay.exe releases/package/Overlay.exe -Force
+          Copy-Item overlay/assets releases/package/assets -Recurse -Force
+          Set-Content releases/package/version.txt "${{ steps.version.outputs.version }}"
+
+      - name: Package update ZIP
+        shell: pwsh
+        run: |
+          $updateDir = "releases/update"
+          if (Test-Path $updateDir) { Remove-Item $updateDir -Recurse -Force }
+          New-Item -ItemType Directory -Path $updateDir | Out-Null
+          Copy-Item build/overlay/Release/Overlay.exe "$updateDir/Overlay.exe" -Force
+          Copy-Item overlay/assets "$updateDir/assets" -Recurse -Force
+          Set-Content "$updateDir/version.txt" "${{ steps.version.outputs.version }}"
+          if (Test-Path releases/Overlay.zip) { Remove-Item releases/Overlay.zip -Force }
+          Compress-Archive -Path "$updateDir/*" -DestinationPath releases/Overlay.zip -CompressionLevel Optimal
+          $hash = (Get-FileHash releases/Overlay.zip -Algorithm SHA256).Hash.ToLowerInvariant()
+          $download = "https://github.com/${{ github.repository }}/releases/download/${{ steps.version.outputs.tag }}/Overlay.zip"
+          $manifest = [ordered]@{
+            version = "${{ steps.version.outputs.version }}"
+            download = $download
+            sha256 = $hash
+            changelog = (Get-Content server/changelog.txt -Raw)
+            minLauncherVersion = "1.0.0"
+          } | ConvertTo-Json -Depth 4
+          Set-Content releases/latest.json $manifest
+
+      - name: Install Inno Setup
+        run: choco install innosetup --no-progress -y
+
+      - name: Build installer
+        shell: pwsh
+        run: |
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" setup/installer.iss
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: Lumina Overlay ${{ steps.version.outputs.version }}
+          body_path: server/changelog.txt
+          files: |
+            releases/Overlay.zip
+            releases/Setup.exe
+            releases/latest.json
+            server/changelog.txt

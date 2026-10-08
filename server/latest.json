@@ -1,0 +1,7 @@
+{
+  "version": "1.0.10",
+  "download": "https://github.com/r4dzioo/LuminaOverlay/releases/download/v1.0.10/Overlay.zip",
+  "sha256": "REPLACE_WITH_RELEASE_SHA256",
+  "changelog": "Smoother launcher motion and a proportional, crisp overlay scale that keeps widgets and graphs aligned with text.",
+  "minLauncherVersion": "1.0.0"
+}

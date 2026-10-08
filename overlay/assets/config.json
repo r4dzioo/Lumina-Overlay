@@ -1,0 +1,56 @@
+{
+  "activeProfile": "Default",
+  "profiles": [
+    {
+      "name": "Default",
+      "globalScale": 1.0,
+      "opacity": 0.88,
+      "clickThrough": true,
+      "rgbAccent": false,
+      "widgets": [
+        {
+          "id": "fps",
+          "enabled": true,
+          "position": { "x": 20.0, "y": 20.0 },
+          "size":     { "x": 420.0, "y": 230.0 },
+          "opacity":  0.88
+        },
+        {
+          "id": "frametime",
+          "enabled": false,
+          "position": { "x": 20.0, "y": 265.0 },
+          "size":     { "x": 420.0, "y": 148.0 },
+          "opacity":  0.82
+        },
+        {
+          "id": "cpu",
+          "enabled": true,
+          "position": { "x": 20.0, "y": 265.0 },
+          "size":     { "x": 200.0, "y": 110.0 },
+          "opacity":  0.82
+        },
+        {
+          "id": "gpu",
+          "enabled": true,
+          "position": { "x": 234.0, "y": 265.0 },
+          "size":     { "x": 200.0, "y": 110.0 },
+          "opacity":  0.82
+        },
+        {
+          "id": "ram",
+          "enabled": true,
+          "position": { "x": 20.0, "y": 387.0 },
+          "size":     { "x": 200.0, "y": 80.0 },
+          "opacity":  0.82
+        },
+        {
+          "id": "network",
+          "enabled": true,
+          "position": { "x": 234.0, "y": 387.0 },
+          "size":     { "x": 200.0, "y": 80.0 },
+          "opacity":  0.82
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+Lumina Overlay 1.0.10
+
+- Added subtle launch and button animations to the launcher interface.
+- Scaled ImGui padding, controls, rounding, graphs, and utilization bars together with the selected overlay font size.
+- Removed post-render FPS-number scaling so the text stays rasterized at its native sharpness.
+- Updated installer, launcher metadata, and GitHub release assets for v1.0.10.
