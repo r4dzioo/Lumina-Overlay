@@ -20,7 +20,10 @@ public:
 
     void SetClickThrough(bool enabled);
     void SetGlobalScale(float scale);
+    void SetGlobalOpacity(float opacity);
+    void SetRgbAccent(bool enabled);
     void UpdateWidgetLayout(const WidgetLayout& layout);
+    void ResetWidgetPositions();
 
     std::filesystem::path ConfigPath() const { return config_path_; }
     std::filesystem::path ThemePath() const { return theme_path_; }

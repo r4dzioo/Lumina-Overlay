@@ -1,5 +1,6 @@
 #include "Overlay/Config/ConfigManager.h"
 
+#include <algorithm>
 #include <array>
 #include <fstream>
 #include <nlohmann/json.hpp>
@@ -200,6 +201,51 @@ void ConfigManager::SetGlobalScale(float scale) {
             profile.global_scale = scale;
             return;
         }
+    }
+}
+
+void ConfigManager::SetGlobalOpacity(float opacity) {
+    std::lock_guard lock(mutex_);
+    for (auto& profile : config_.profiles) {
+        if (profile.name == config_.active_profile) {
+            profile.opacity = std::clamp(opacity, 0.10f, 1.00f);
+            return;
+        }
+    }
+}
+
+void ConfigManager::SetRgbAccent(bool enabled) {
+    std::lock_guard lock(mutex_);
+    for (auto& profile : config_.profiles) {
+        if (profile.name == config_.active_profile) {
+            profile.rgb_accent = enabled;
+            return;
+        }
+    }
+}
+
+void ConfigManager::ResetWidgetPositions() {
+    std::lock_guard lock(mutex_);
+    for (auto& profile : config_.profiles) {
+        if (profile.name != config_.active_profile) continue;
+        const std::array<WidgetLayout, 6> defaults{{
+            WidgetLayout{"fps",       true, {24.0f, 24.0f},  {248.0f, 112.0f}, 0.82f},
+            WidgetLayout{"frametime", true, {24.0f, 148.0f}, {360.0f, 140.0f}, 0.78f},
+            WidgetLayout{"cpu",       true, {24.0f, 300.0f}, {248.0f, 112.0f}, 0.78f},
+            WidgetLayout{"gpu",       true, {286.0f, 300.0f},{248.0f, 112.0f}, 0.78f},
+            WidgetLayout{"ram",       true, {24.0f, 424.0f}, {248.0f, 96.0f},  0.78f},
+            WidgetLayout{"network",   true, {286.0f, 424.0f},{248.0f, 96.0f},  0.78f},
+        }};
+        for (const auto& def : defaults) {
+            for (auto& w : profile.widgets) {
+                if (w.id == def.id) {
+                    w.position = def.position;
+                    w.size     = def.size;
+                    break;
+                }
+            }
+        }
+        return;
     }
 }
 

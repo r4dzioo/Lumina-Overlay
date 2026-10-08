@@ -2,86 +2,492 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Lumina Overlay"
-        Width="980" Height="620" MinWidth="820" MinHeight="520"
-        WindowStartupLocation="CenterScreen" Background="#0A0D14"
+        Width="1020" Height="660" MinWidth="860" MinHeight="560"
+        WindowStartupLocation="CenterScreen"
+        Background="#080C12"
         FontFamily="Segoe UI" TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType">
     <Window.Resources>
-        <SolidColorBrush x:Key="Surface" Color="#121824"/>
-        <SolidColorBrush x:Key="Border" Color="#26364B"/>
-        <SolidColorBrush x:Key="Accent" Color="#2EE6A6"/>
-        <SolidColorBrush x:Key="AccentHover" Color="#65F0C1"/>
-        <SolidColorBrush x:Key="PrimaryText" Color="#F2F7FB"/>
-        <SolidColorBrush x:Key="MutedText" Color="#91A0B5"/>
-        <Style x:Key="ActionButton" TargetType="Button">
-            <Setter Property="Foreground" Value="#07130F"/><Setter Property="Background" Value="{StaticResource Accent}"/>
-            <Setter Property="BorderBrush" Value="{StaticResource Accent}"/><Setter Property="FontSize" Value="14"/>
-            <Setter Property="FontWeight" Value="SemiBold"/><Setter Property="Height" Value="46"/><Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="Button">
-                <Border x:Name="ButtonSurface" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" CornerRadius="6" RenderTransformOrigin="0.5,0.5">
-                    <Border.RenderTransform><ScaleTransform ScaleX="1" ScaleY="1"/></Border.RenderTransform>
-                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                </Border>
-                <ControlTemplate.Triggers>
-                    <Trigger Property="IsMouseOver" Value="True"><Setter Property="Background" Value="{StaticResource AccentHover}"/></Trigger>
-                    <Trigger Property="IsPressed" Value="True"><Setter Property="Opacity" Value="0.82"/></Trigger>
-                    <Trigger Property="IsEnabled" Value="False"><Setter Property="Opacity" Value="0.38"/></Trigger>
-                    <EventTrigger RoutedEvent="MouseEnter"><BeginStoryboard><Storyboard><DoubleAnimation Storyboard.TargetName="ButtonSurface" Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleX)" To="1.015" Duration="0:0:0.12"/><DoubleAnimation Storyboard.TargetName="ButtonSurface" Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleY)" To="1.015" Duration="0:0:0.12"/></Storyboard></BeginStoryboard></EventTrigger>
-                    <EventTrigger RoutedEvent="MouseLeave"><BeginStoryboard><Storyboard><DoubleAnimation Storyboard.TargetName="ButtonSurface" Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleX)" To="1" Duration="0:0:0.16"/><DoubleAnimation Storyboard.TargetName="ButtonSurface" Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleY)" To="1" Duration="0:0:0.16"/></Storyboard></BeginStoryboard></EventTrigger>
-                </ControlTemplate.Triggers>
-            </ControlTemplate></Setter.Value></Setter>
+        <!-- Palette -->
+        <SolidColorBrush x:Key="BgDeep"      Color="#080C12"/>
+        <SolidColorBrush x:Key="BgSurface"   Color="#0F1620"/>
+        <SolidColorBrush x:Key="BgCard"      Color="#131E2E"/>
+        <SolidColorBrush x:Key="Border"      Color="#1E2E42"/>
+        <SolidColorBrush x:Key="BorderHover" Color="#2A4060"/>
+        <SolidColorBrush x:Key="Accent"      Color="#22D97E"/>
+        <SolidColorBrush x:Key="AccentDim"   Color="#18A35E"/>
+        <SolidColorBrush x:Key="AccentGlow"  Color="#4FEBA0"/>
+        <SolidColorBrush x:Key="TextPrimary" Color="#EEF3F8"/>
+        <SolidColorBrush x:Key="TextMuted"   Color="#7A96B2"/>
+        <SolidColorBrush x:Key="TextFaint"   Color="#3D5570"/>
+        <SolidColorBrush x:Key="Danger"      Color="#FF4E6A"/>
+        <SolidColorBrush x:Key="DangerBg"    Color="#2A1020"/>
+        <SolidColorBrush x:Key="DangerBrd"   Color="#5A2030"/>
+        <SolidColorBrush x:Key="Warning"     Color="#F5A623"/>
+
+        <!-- Primary action button -->
+        <Style x:Key="PrimaryBtn" TargetType="Button">
+            <Setter Property="Foreground" Value="#060E08"/>
+            <Setter Property="Background" Value="{StaticResource Accent}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Accent}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Height" Value="42"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="5" RenderTransformOrigin="0.5,0.5">
+                            <Border.RenderTransform><ScaleTransform/></Border.RenderTransform>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{StaticResource AccentGlow}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Bd" Property="Opacity" Value="0.82"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="Bd" Property="Opacity" Value="0.35"/>
+                            </Trigger>
+                            <EventTrigger RoutedEvent="MouseEnter">
+                                <BeginStoryboard><Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="Bd" Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleX)" To="1.012" Duration="0:0:0.10"/>
+                                    <DoubleAnimation Storyboard.TargetName="Bd" Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleY)" To="1.012" Duration="0:0:0.10"/>
+                                </Storyboard></BeginStoryboard>
+                            </EventTrigger>
+                            <EventTrigger RoutedEvent="MouseLeave">
+                                <BeginStoryboard><Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="Bd" Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleX)" To="1" Duration="0:0:0.14"/>
+                                    <DoubleAnimation Storyboard.TargetName="Bd" Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleY)" To="1" Duration="0:0:0.14"/>
+                                </Storyboard></BeginStoryboard>
+                            </EventTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
-        <Style x:Key="SecondaryButton" TargetType="Button" BasedOn="{StaticResource ActionButton}">
-            <Setter Property="Foreground" Value="{StaticResource PrimaryText}"/><Setter Property="Background" Value="#1B2637"/><Setter Property="BorderBrush" Value="{StaticResource Border}"/>
+
+        <!-- Ghost / secondary button -->
+        <Style x:Key="GhostBtn" TargetType="Button" BasedOn="{StaticResource PrimaryBtn}">
+            <Setter Property="Foreground" Value="{StaticResource TextPrimary}"/>
+            <Setter Property="Background" Value="#131E2E"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Border}"/>
+        </Style>
+
+        <!-- Stop / danger button -->
+        <Style x:Key="DangerBtn" TargetType="Button" BasedOn="{StaticResource PrimaryBtn}">
+            <Setter Property="Foreground" Value="{StaticResource Danger}"/>
+            <Setter Property="Background" Value="{StaticResource DangerBg}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource DangerBrd}"/>
+        </Style>
+
+        <!-- Section label -->
+        <Style x:Key="SectionLabel" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource TextFaint}"/>
+            <Setter Property="FontSize" Value="10"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="LetterSpacing" Value="1.5"/>
+        </Style>
+
+        <!-- Nav item -->
+        <Style x:Key="NavItem" TargetType="RadioButton">
+            <Setter Property="Foreground" Value="{StaticResource TextMuted}"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Margin" Value="0,2"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="NavBd" Background="Transparent" CornerRadius="4" Padding="10,7">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock x:Name="NavIcon" Text="{TemplateBinding Tag}" Width="16" Foreground="{TemplateBinding Foreground}" FontSize="13"/>
+                                <TextBlock Text="{TemplateBinding Content}" Foreground="{TemplateBinding Foreground}" Margin="8,0,0,0"/>
+                            </StackPanel>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="NavBd" Property="Background" Value="#162030"/>
+                                <Setter Property="Foreground" Value="{StaticResource Accent}"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="NavBd" Property="Background" Value="#0F1C2C"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Slider style -->
+        <Style x:Key="SlimSlider" TargetType="Slider">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Slider">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto" MinHeight="{TemplateBinding MinHeight}"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Track x:Name="PART_Track" Grid.Row="1">
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton Style="{x:Null}" Height="4" Background="{StaticResource Accent}" BorderThickness="0" Cursor="Hand"/>
+                                </Track.DecreaseRepeatButton>
+                                <Track.Thumb>
+                                    <Thumb Width="14" Height="14" Cursor="Hand">
+                                        <Thumb.Template>
+                                            <ControlTemplate TargetType="Thumb">
+                                                <Ellipse Fill="{StaticResource AccentGlow}" Width="14" Height="14"/>
+                                            </ControlTemplate>
+                                        </Thumb.Template>
+                                    </Thumb>
+                                </Track.Thumb>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton Style="{x:Null}" Height="4" Background="#1E2E42" BorderThickness="0" Cursor="Hand"/>
+                                </Track.IncreaseRepeatButton>
+                            </Track>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Toggle checkbox style -->
+        <Style x:Key="ToggleCheck" TargetType="CheckBox">
+            <Setter Property="Foreground" Value="{StaticResource TextPrimary}"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <Border x:Name="ToggleBg" Width="36" Height="20" CornerRadius="10"
+                                    Background="#1E2E42" BorderBrush="{StaticResource Border}" BorderThickness="1">
+                                <Border x:Name="ToggleKnob" Width="14" Height="14" CornerRadius="7"
+                                        Background="{StaticResource TextFaint}" HorizontalAlignment="Left" Margin="2,0"/>
+                            </Border>
+                            <ContentPresenter Margin="8,0,0,0" VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="ToggleBg" Property="Background" Value="#1A4030"/>
+                                <Setter TargetName="ToggleBg" Property="BorderBrush" Value="{StaticResource AccentDim}"/>
+                                <Setter TargetName="ToggleKnob" Property="Background" Value="{StaticResource Accent}"/>
+                                <Setter TargetName="ToggleKnob" Property="HorizontalAlignment" Value="Right"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
     </Window.Resources>
 
-    <Grid x:Name="LauncherShell" Opacity="0">
-        <Grid.RenderTransform><TranslateTransform Y="10"/></Grid.RenderTransform>
-        <Grid.ColumnDefinitions><ColumnDefinition Width="210"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
-        <Border Grid.Column="0" Background="#0D121C" BorderBrush="#1A2637" BorderThickness="0,0,1,0">
-            <Grid Margin="26,28">
-                <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
-                <StackPanel>
-                    <Border Width="42" Height="42" Background="{StaticResource Accent}" CornerRadius="7" HorizontalAlignment="Left"><TextBlock Text="GO" Foreground="#07130F" FontWeight="Bold" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center"/></Border>
-                    <TextBlock Text="Lumina Overlay" Foreground="{StaticResource PrimaryText}" FontSize="21" FontWeight="SemiBold" Margin="0,16,0,3"/>
-                    <TextBlock Text="CONTROL CENTER" Foreground="{StaticResource MutedText}" FontSize="10" FontWeight="SemiBold"/>
+    <Grid x:Name="Shell" Opacity="0">
+        <Grid.RenderTransform><TranslateTransform Y="14"/></Grid.RenderTransform>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- ══ SIDEBAR ══════════════════════════════════════════════════════ -->
+        <Border Grid.Column="0" Background="#0A1018" BorderBrush="#131E2E" BorderThickness="0,0,1,0">
+            <Grid Margin="20,24,20,20">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Logo -->
+                <StackPanel Grid.Row="0">
+                    <Border Width="40" Height="40" CornerRadius="10" HorizontalAlignment="Left">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="#18A35E" Offset="0"/>
+                                <GradientStop Color="#22D97E" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <TextBlock Text="LO" Foreground="#060E08" FontWeight="Black" FontSize="14"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <TextBlock Text="Lumina Overlay" Foreground="{StaticResource TextPrimary}"
+                               FontSize="17" FontWeight="SemiBold" Margin="0,14,0,2"/>
+                    <TextBlock Text="CONTROL CENTER" Style="{StaticResource SectionLabel}" Margin="0,0,0,0"/>
                 </StackPanel>
-                <StackPanel Grid.Row="2">
-                    <TextBlock Text="INSTALLATION" Foreground="{StaticResource MutedText}" FontSize="10" FontWeight="SemiBold"/>
-                    <TextBlock Text="{Binding VersionText}" Foreground="{StaticResource PrimaryText}" FontSize="12" TextWrapping="Wrap" Margin="0,8,0,0"/>
+
+                <!-- Status indicator -->
+                <Border Grid.Row="1" Margin="0,18,0,0" CornerRadius="5" Padding="10,7"
+                        Background="{Binding StatusBgColor}" BorderBrush="{Binding StatusBorderColor}" BorderThickness="1">
+                    <StackPanel Orientation="Horizontal">
+                        <Ellipse Width="7" Height="7" Fill="{Binding StatusDotColor}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                        <TextBlock Text="{Binding StatusText}" Foreground="{Binding StatusFgColor}"
+                                   FontSize="12" FontWeight="SemiBold"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Nav -->
+                <StackPanel Grid.Row="2" Margin="0,20,0,0">
+                    <TextBlock Text="NAVIGATION" Style="{StaticResource SectionLabel}" Margin="10,0,0,8"/>
+                    <RadioButton Style="{StaticResource NavItem}" Content="Dashboard"    Tag="▣" x:Name="NavDashboard"  IsChecked="True"  Click="NavDashboard_Click"/>
+                    <RadioButton Style="{StaticResource NavItem}" Content="Customization" Tag="✦" x:Name="NavCustomize"                    Click="NavCustomize_Click"/>
+                    <RadioButton Style="{StaticResource NavItem}" Content="Updates"       Tag="↑" x:Name="NavUpdates"                       Click="NavUpdates_Click"/>
+                </StackPanel>
+
+                <!-- Version info -->
+                <StackPanel Grid.Row="3">
+                    <Separator Background="#131E2E" Margin="0,0,0,12"/>
+                    <TextBlock Text="VERSION" Style="{StaticResource SectionLabel}" Margin="0,0,0,5"/>
+                    <TextBlock Text="{Binding VersionText}" Foreground="{StaticResource TextMuted}"
+                               FontSize="11" TextWrapping="Wrap"/>
                 </StackPanel>
             </Grid>
         </Border>
-        <Grid Grid.Column="1" Margin="42,32,42,28">
-            <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
-            <DockPanel Grid.Row="0">
-                <StackPanel><TextBlock Text="Overlay status" Foreground="{StaticResource MutedText}" FontSize="12"/><TextBlock Text="Ready to play" Foreground="{StaticResource PrimaryText}" FontSize="29" FontWeight="SemiBold" Margin="0,3,0,0"/></StackPanel>
-                <Border DockPanel.Dock="Right" Background="#162638" BorderBrush="#284462" BorderThickness="1" CornerRadius="6" Padding="12,7" VerticalAlignment="Center"><TextBlock Text="{Binding StatusText}" Foreground="#A9DFFF" FontSize="12" FontWeight="SemiBold"/></Border>
-            </DockPanel>
-            <Grid Grid.Row="1" Margin="0,34,0,26">
-                <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="28"/><ColumnDefinition Width="280"/></Grid.ColumnDefinitions>
-                <Border Grid.Column="0" Background="{StaticResource Surface}" BorderBrush="{StaticResource Border}" BorderThickness="1" CornerRadius="7" Padding="24">
-                    <Grid><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
-                        <StackPanel><TextBlock Text="Release notes" Foreground="{StaticResource PrimaryText}" FontSize="17" FontWeight="SemiBold"/><TextBlock Text="What changed in the current build" Foreground="{StaticResource MutedText}" FontSize="12" Margin="0,4,0,0"/></StackPanel>
-                        <ScrollViewer Grid.Row="1" Margin="0,20,0,0" VerticalScrollBarVisibility="Auto"><TextBlock Text="{Binding Changelog}" Foreground="#BEC9D7" TextWrapping="Wrap" FontSize="13" LineHeight="21"/></ScrollViewer>
-                    </Grid>
-                </Border>
-                <Border Grid.Column="2" Background="{StaticResource Surface}" BorderBrush="{StaticResource Border}" BorderThickness="1" CornerRadius="7" Padding="22">
-                    <StackPanel><TextBlock Text="Session" Foreground="{StaticResource MutedText}" FontSize="12"/><TextBlock Text="{Binding OverlayState}" Foreground="{StaticResource PrimaryText}" TextWrapping="Wrap" FontSize="14" LineHeight="20" Margin="0,10,0,24"/>
-                        <Button Content="{Binding PrimaryButtonText}" Style="{StaticResource ActionButton}" IsEnabled="{Binding CanRunPrimaryAction}" Click="PrimaryButton_Click"/>
-                        <Button Content="Check for updates" Style="{StaticResource SecondaryButton}" Margin="0,10,0,0" IsEnabled="{Binding CanRunPrimaryAction}" Click="CheckButton_Click"/>
-                        <Separator Background="{StaticResource Border}" Margin="0,20"/>
-                        <Button Content="Uninstall Lumina Overlay" Style="{StaticResource SecondaryButton}" Foreground="#FFB8C4" Background="#241720" BorderBrush="#4D2B39" IsEnabled="{Binding CanRunPrimaryAction}" Click="UninstallButton_Click"/>
+
+        <!-- ══ MAIN CONTENT ════════════════════════════════════════════════ -->
+        <Grid Grid.Column="1" Margin="0">
+
+            <!-- ── DASHBOARD PAGE ───────────────────────────────────────── -->
+            <Grid x:Name="PageDashboard" Margin="36,28,36,24">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Page header -->
+                <DockPanel Grid.Row="0" Margin="0,0,0,0">
+                    <StackPanel>
+                        <TextBlock Text="Overlay Status" Foreground="{StaticResource TextMuted}" FontSize="12"/>
+                        <TextBlock Text="{Binding PageTitle}" Foreground="{StaticResource TextPrimary}"
+                                   FontSize="26" FontWeight="SemiBold" Margin="0,3,0,0"/>
+                    </StackPanel>
+                </DockPanel>
+
+                <!-- Content grid -->
+                <Grid Grid.Row="1" Margin="0,28,0,24">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="24"/>
+                        <ColumnDefinition Width="260"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Release notes card -->
+                    <Border Grid.Column="0" Background="{StaticResource BgCard}"
+                            BorderBrush="{StaticResource Border}" BorderThickness="1" CornerRadius="8" Padding="22">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <StackPanel Grid.Row="0">
+                                <TextBlock Text="Release Notes" Foreground="{StaticResource TextPrimary}"
+                                           FontSize="15" FontWeight="SemiBold"/>
+                                <TextBlock Text="What changed in the current build"
+                                           Foreground="{StaticResource TextMuted}" FontSize="12" Margin="0,3,0,0"/>
+                                <Rectangle Height="1" Fill="{StaticResource Border}" Margin="0,14,0,0"/>
+                            </StackPanel>
+                            <ScrollViewer Grid.Row="1" Margin="0,14,0,0"
+                                          VerticalScrollBarVisibility="Auto">
+                                <TextBlock Text="{Binding Changelog}" Foreground="#B0C4D8"
+                                           TextWrapping="Wrap" FontSize="13" LineHeight="21"/>
+                            </ScrollViewer>
+                        </Grid>
+                    </Border>
+
+                    <!-- Action panel -->
+                    <Border Grid.Column="2" Background="{StaticResource BgCard}"
+                            BorderBrush="{StaticResource Border}" BorderThickness="1" CornerRadius="8" Padding="20">
+                        <StackPanel>
+                            <TextBlock Text="SESSION" Style="{StaticResource SectionLabel}" Margin="0,0,0,10"/>
+                            <TextBlock Text="{Binding OverlayState}" Foreground="{StaticResource TextPrimary}"
+                                       TextWrapping="Wrap" FontSize="13" LineHeight="19" Margin="0,0,0,20"/>
+
+                            <!-- Launch / Update -->
+                            <Button Content="{Binding PrimaryButtonText}" Style="{StaticResource PrimaryBtn}"
+                                    IsEnabled="{Binding CanRunPrimaryAction}" Click="PrimaryButton_Click"/>
+
+                            <!-- Stop Overlay -->
+                            <Button Content="⏹  Stop Overlay" Style="{StaticResource DangerBtn}"
+                                    IsEnabled="{Binding CanStopOverlay}" Margin="0,8,0,0"
+                                    Click="StopButton_Click"/>
+
+                            <Rectangle Height="1" Fill="{StaticResource Border}" Margin="0,18,0,18"/>
+
+                            <Button Content="Check for Updates" Style="{StaticResource GhostBtn}"
+                                    IsEnabled="{Binding CanRunPrimaryAction}" Click="CheckButton_Click"/>
+
+                            <Rectangle Height="1" Fill="{StaticResource Border}" Margin="0,14,0,14"/>
+
+                            <Button Content="Uninstall Lumina Overlay" Style="{StaticResource DangerBtn}"
+                                    Foreground="#CC3355" Background="#1A0C14" BorderBrush="#3A1A26"
+                                    IsEnabled="{Binding CanRunPrimaryAction}" Click="UninstallButton_Click"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <!-- Progress bar -->
+                <StackPanel Grid.Row="2">
+                    <DockPanel Margin="0,0,0,6">
+                        <TextBlock Text="{Binding ProgressText}" Foreground="{StaticResource TextMuted}" FontSize="12"/>
+                        <TextBlock DockPanel.Dock="Right"
+                                   Text="{Binding Progress, StringFormat={}{0:0}%}"
+                                   Foreground="{StaticResource TextPrimary}" FontSize="12"/>
+                    </DockPanel>
+                    <Border CornerRadius="3" ClipToBounds="True" Height="5" Background="#131E2E">
+                        <Border x:Name="ProgressFill" CornerRadius="3" Height="5"
+                                HorizontalAlignment="Left">
+                            <Border.Width>
+                                <MultiBinding>
+                                    <MultiBinding.Converter>
+                                        <local:ProgressWidthConverter xmlns:local="clr-namespace:Launcher"/>
+                                    </MultiBinding.Converter>
+                                    <Binding Path="Progress"/>
+                                    <Binding RelativeSource="{RelativeSource AncestorType=Border}" Path="ActualWidth"/>
+                                </MultiBinding>
+                            </Border.Width>
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                    <GradientStop Color="#18A35E" Offset="0"/>
+                                    <GradientStop Color="#22D97E" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                        </Border>
+                    </Border>
+                </StackPanel>
+            </Grid>
+
+            <!-- ── CUSTOMIZATION PAGE ────────────────────────────────────── -->
+            <Grid x:Name="PageCustomize" Margin="36,28,36,24" Visibility="Collapsed">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <StackPanel Grid.Row="0">
+                    <TextBlock Text="Appearance" Foreground="{StaticResource TextMuted}" FontSize="12"/>
+                    <TextBlock Text="Customization" Foreground="{StaticResource TextPrimary}"
+                               FontSize="26" FontWeight="SemiBold" Margin="0,3,0,0"/>
+                </StackPanel>
+
+                <ScrollViewer Grid.Row="1" Margin="0,24,0,0" VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+
+                        <!-- Opacity card -->
+                        <Border Background="{StaticResource BgCard}" BorderBrush="{StaticResource Border}"
+                                BorderThickness="1" CornerRadius="8" Padding="22" Margin="0,0,0,16">
+                            <StackPanel>
+                                <TextBlock Text="OVERLAY OPACITY" Style="{StaticResource SectionLabel}" Margin="0,0,0,14"/>
+                                <DockPanel>
+                                    <TextBlock Text="{Binding OpacityPercent, StringFormat={}{0}%}"
+                                               Foreground="{StaticResource Accent}" FontSize="13" FontWeight="SemiBold"
+                                               DockPanel.Dock="Right" Width="38" TextAlignment="Right"/>
+                                    <Slider x:Name="OpacitySlider" Style="{StaticResource SlimSlider}"
+                                            Minimum="20" Maximum="100" Value="{Binding OpacityPercent}"
+                                            TickFrequency="5" IsSnapToTickEnabled="True"
+                                            ValueChanged="OpacitySlider_ValueChanged"/>
+                                </DockPanel>
+                                <TextBlock Text="Controls overall transparency of all overlay widgets."
+                                           Foreground="{StaticResource TextFaint}" FontSize="11" Margin="0,8,0,0"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- RGB accent toggle -->
+                        <Border Background="{StaticResource BgCard}" BorderBrush="{StaticResource Border}"
+                                BorderThickness="1" CornerRadius="8" Padding="22" Margin="0,0,0,16">
+                            <StackPanel>
+                                <TextBlock Text="EFFECTS" Style="{StaticResource SectionLabel}" Margin="0,0,0,14"/>
+                                <CheckBox Style="{StaticResource ToggleCheck}" Content="RGB Accent cycling"
+                                          IsChecked="{Binding RgbAccentEnabled}"
+                                          Checked="RgbAccent_Changed" Unchecked="RgbAccent_Changed"/>
+                                <TextBlock Text="Slowly cycles the accent colour through the spectrum."
+                                           Foreground="{StaticResource TextFaint}" FontSize="11" Margin="0,8,0,0"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Widget toggles -->
+                        <Border Background="{StaticResource BgCard}" BorderBrush="{StaticResource Border}"
+                                BorderThickness="1" CornerRadius="8" Padding="22" Margin="0,0,0,16">
+                            <StackPanel>
+                                <TextBlock Text="VISIBLE WIDGETS" Style="{StaticResource SectionLabel}" Margin="0,0,0,14"/>
+                                <CheckBox Style="{StaticResource ToggleCheck}" Content="FPS &amp; Frametime"
+                                          IsChecked="{Binding WidgetFpsEnabled}"
+                                          Checked="Widget_Changed" Unchecked="Widget_Changed" Tag="fps" Margin="0,0,0,10"/>
+                                <CheckBox Style="{StaticResource ToggleCheck}" Content="Frametime Graph"
+                                          IsChecked="{Binding WidgetFrametimeEnabled}"
+                                          Checked="Widget_Changed" Unchecked="Widget_Changed" Tag="frametime" Margin="0,0,0,10"/>
+                                <CheckBox Style="{StaticResource ToggleCheck}" Content="CPU"
+                                          IsChecked="{Binding WidgetCpuEnabled}"
+                                          Checked="Widget_Changed" Unchecked="Widget_Changed" Tag="cpu" Margin="0,0,0,10"/>
+                                <CheckBox Style="{StaticResource ToggleCheck}" Content="GPU"
+                                          IsChecked="{Binding WidgetGpuEnabled}"
+                                          Checked="Widget_Changed" Unchecked="Widget_Changed" Tag="gpu" Margin="0,0,0,10"/>
+                                <CheckBox Style="{StaticResource ToggleCheck}" Content="RAM"
+                                          IsChecked="{Binding WidgetRamEnabled}"
+                                          Checked="Widget_Changed" Unchecked="Widget_Changed" Tag="ram" Margin="0,0,0,10"/>
+                                <CheckBox Style="{StaticResource ToggleCheck}" Content="Network"
+                                          IsChecked="{Binding WidgetNetworkEnabled}"
+                                          Checked="Widget_Changed" Unchecked="Widget_Changed" Tag="network"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Save / Reset -->
+                        <DockPanel>
+                            <Button DockPanel.Dock="Right" Content="Reset to Defaults" Style="{StaticResource GhostBtn}"
+                                    Width="160" Click="ResetDefaults_Click"/>
+                            <Button Content="Save Changes" Style="{StaticResource PrimaryBtn}"
+                                    Margin="0,0,12,0" Click="SaveCustomization_Click"/>
+                        </DockPanel>
+
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+
+            <!-- ── UPDATES PAGE ──────────────────────────────────────────── -->
+            <Grid x:Name="PageUpdates" Margin="36,28,36,24" Visibility="Collapsed">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Row="0">
+                    <TextBlock Text="Software" Foreground="{StaticResource TextMuted}" FontSize="12"/>
+                    <TextBlock Text="Updates" Foreground="{StaticResource TextPrimary}"
+                               FontSize="26" FontWeight="SemiBold" Margin="0,3,0,0"/>
+                </StackPanel>
+                <Border Grid.Row="1" Margin="0,24,0,0" Background="{StaticResource BgCard}"
+                        BorderBrush="{StaticResource Border}" BorderThickness="1" CornerRadius="8" Padding="24">
+                    <StackPanel>
+                        <TextBlock Text="CURRENT VERSION" Style="{StaticResource SectionLabel}" Margin="0,0,0,10"/>
+                        <TextBlock Text="{Binding VersionText}" Foreground="{StaticResource TextPrimary}"
+                                   FontSize="14" Margin="0,0,0,24"/>
+                        <Button Content="Check for Updates" Style="{StaticResource PrimaryBtn}"
+                                Width="200" HorizontalAlignment="Left"
+                                IsEnabled="{Binding CanRunPrimaryAction}" Click="CheckButton_Click"/>
+                        <Rectangle Height="1" Fill="{StaticResource Border}" Margin="0,24,0,24"/>
+                        <TextBlock Text="RELEASE NOTES" Style="{StaticResource SectionLabel}" Margin="0,0,0,10"/>
+                        <TextBlock Text="{Binding Changelog}" Foreground="#B0C4D8"
+                                   TextWrapping="Wrap" FontSize="13" LineHeight="21"/>
                     </StackPanel>
                 </Border>
             </Grid>
-            <StackPanel Grid.Row="2"><DockPanel Margin="0,0,0,8"><TextBlock Text="{Binding ProgressText}" Foreground="{StaticResource MutedText}" FontSize="12"/><TextBlock DockPanel.Dock="Right" Text="{Binding Progress, StringFormat={}{0:0}%}" Foreground="{StaticResource PrimaryText}" FontSize="12"/></DockPanel><ProgressBar Height="6" Minimum="0" Maximum="100" Value="{Binding Progress}" Foreground="{StaticResource Accent}" Background="#1A2433"/></StackPanel>
+
         </Grid>
+
+        <!-- Fade-in animation -->
         <Grid.Triggers>
-            <EventTrigger RoutedEvent="FrameworkElement.Loaded"><BeginStoryboard><Storyboard>
-                <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.22"/>
-                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.(TranslateTransform.Y)" To="0" Duration="0:0:0.22"/>
-            </Storyboard></BeginStoryboard></EventTrigger>
+            <EventTrigger RoutedEvent="FrameworkElement.Loaded">
+                <BeginStoryboard><Storyboard>
+                    <DoubleAnimation Storyboard.TargetName="Shell" Storyboard.TargetProperty="Opacity"
+                                     To="1" Duration="0:0:0.25"/>
+                    <DoubleAnimation Storyboard.TargetName="Shell"
+                                     Storyboard.TargetProperty="RenderTransform.(TranslateTransform.Y)"
+                                     To="0" Duration="0:0:0.25"/>
+                </Storyboard></BeginStoryboard>
+            </EventTrigger>
         </Grid.Triggers>
     </Grid>
 </Window>

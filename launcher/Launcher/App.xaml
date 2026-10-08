@@ -3,13 +3,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-        <SolidColorBrush x:Key="LauncherBackground" Color="#090B10"/>
-        <SolidColorBrush x:Key="PanelBackground" Color="#121722"/>
-        <SolidColorBrush x:Key="PanelBorder" Color="#243044"/>
-        <SolidColorBrush x:Key="Accent" Color="#0DD1FF"/>
-        <SolidColorBrush x:Key="AccentHover" Color="#2AD9FF"/>
-        <SolidColorBrush x:Key="TextPrimary" Color="#EAF2F8"/>
-        <SolidColorBrush x:Key="TextMuted" Color="#8EA0AF"/>
+        <!-- Global palette — emerald green theme -->
+        <SolidColorBrush x:Key="LauncherBackground" Color="#080C12"/>
+        <SolidColorBrush x:Key="PanelBackground"    Color="#0F1620"/>
+        <SolidColorBrush x:Key="PanelBorder"        Color="#1E2E42"/>
+        <SolidColorBrush x:Key="Accent"             Color="#22D97E"/>
+        <SolidColorBrush x:Key="AccentHover"        Color="#4FEBA0"/>
+        <SolidColorBrush x:Key="TextPrimary"        Color="#EEF3F8"/>
+        <SolidColorBrush x:Key="TextMuted"          Color="#7A96B2"/>
     </Application.Resources>
 </Application>
 

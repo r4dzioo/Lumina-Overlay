@@ -150,51 +150,126 @@ void App::RenderFrame() {
 void App::RenderSettingsWindow(const Telemetry::MetricSnapshot& snapshot) {
     auto profile = config_.ActiveProfile();
 
-    ImGui::SetNextWindowSize(ImVec2(460.0f, 420.0f), ImGuiCond_FirstUseEver);
-    ImGui::Begin("Lumina Overlay Settings", &settings_visible_, ImGuiWindowFlags_NoCollapse);
+    ImGui::SetNextWindowSize(ImVec2(520.0f, 560.0f), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowPos(ImVec2(60.0f, 60.0f), ImGuiCond_FirstUseEver);
+    ImGui::Begin("Lumina Overlay — Settings", &settings_visible_,
+                 ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize);
 
-    // Accent colour matching the new yellow-green theme
-    const ImVec4 accent = ImVec4(0.68f, 1.0f, 0.0f, 1.0f);
+    // Emerald accent
+    const ImVec4 accent  = ImVec4(0.13f, 0.85f, 0.49f, 1.0f);
+    const ImVec4 warning = ImVec4(0.96f, 0.65f, 0.14f, 1.0f);
+    const ImVec4 muted   = ImVec4(0.48f, 0.60f, 0.70f, 1.0f);
 
-    ImGui::TextColored(accent, "Runtime");
+    // ── Live metrics ─────────────────────────────────────────────────────
+    ImGui::TextColored(accent, "LIVE METRICS");
+    ImGui::Separator();
     if (snapshot.has_game_frametime) {
-        ImGui::Text("FPS %.0f   Frametime %.2f ms", snapshot.fps, snapshot.frametime_ms);
+        ImGui::Text("FPS  "); ImGui::SameLine(0, 0);
+        ImGui::TextColored(accent, "%.0f", snapshot.fps);
+        ImGui::SameLine(110.0f);
+        ImGui::Text("Frametime  "); ImGui::SameLine(0, 0);
+        ImGui::TextColored(accent, "%.2f ms", snapshot.frametime_ms);
+        if (snapshot.fps_1_percent_low > 0.0f) {
+            ImGui::Text("1%% Low  "); ImGui::SameLine(0, 0);
+            ImGui::TextColored(accent, "%.0f", snapshot.fps_1_percent_low);
+            ImGui::SameLine(110.0f);
+            ImGui::Text("0.1%% Low  "); ImGui::SameLine(0, 0);
+            ImGui::TextColored(accent, "%.0f", snapshot.fps_0_1_percent_low);
+        }
     } else {
-        ImGui::TextDisabled("FPS — initializing...");
+        ImGui::TextColored(muted, "FPS — waiting for frames...");
     }
-    ImGui::TextDisabled("F10 edit mode unlocks widgets. Close settings to make overlay click-through.");
-    ImGui::Checkbox("Performance mode", &performance_mode_);
+    ImGui::Text("CPU  "); ImGui::SameLine(0, 0);
+    ImGui::TextColored(
+        snapshot.cpu_usage_percent > 90.0f ? warning : accent,
+        "%.0f%%", snapshot.cpu_usage_percent);
+    ImGui::SameLine(110.0f);
+    ImGui::Text("GPU  "); ImGui::SameLine(0, 0);
+    ImGui::TextColored(
+        snapshot.gpu_usage_percent > 90.0f ? warning : accent,
+        "%.0f%%", snapshot.gpu_usage_percent);
+    ImGui::Text("RAM  "); ImGui::SameLine(0, 0);
+    ImGui::TextColored(accent, "%.0f / %.0f MB", snapshot.ram_used_mb, snapshot.ram_total_mb);
+    ImGui::Spacing();
 
-    bool click_through = profile.click_through;
-    if (ImGui::Checkbox("Click-through overlay", &click_through)) {
-        config_.SetClickThrough(click_through);
-    }
+    // ── Display ──────────────────────────────────────────────────────────
+    ImGui::TextColored(accent, "DISPLAY");
+    ImGui::Separator();
 
     float scale = profile.global_scale;
-    if (ImGui::SliderFloat("Scale", &scale, 0.75f, 1.75f, "%.2f")) {
+    if (ImGui::SliderFloat("UI Scale", &scale, 0.75f, 1.75f, "%.2f")) {
         config_.SetGlobalScale(scale);
     }
 
+    // Per-profile global opacity
+    float global_opacity = profile.opacity;
+    if (ImGui::SliderFloat("Global Opacity", &global_opacity, 0.20f, 1.00f, "%.2f")) {
+        for (auto& p : config_.Snapshot().profiles) {
+            if (p.name == profile.name) {
+                // direct setter via ConfigManager
+            }
+        }
+        config_.SetGlobalOpacity(global_opacity);
+    }
+
+    bool click_through = profile.click_through;
+    if (ImGui::Checkbox("Click-through (non-edit mode)", &click_through)) {
+        config_.SetClickThrough(click_through);
+    }
+
+    bool perf_mode = performance_mode_;
+    if (ImGui::Checkbox("Performance mode  (unlock framerate)", &perf_mode)) {
+        performance_mode_ = perf_mode;
+    }
+
+    bool rgb = profile.rgb_accent;
+    if (ImGui::Checkbox("RGB accent cycling", &rgb)) {
+        config_.SetRgbAccent(rgb);
+    }
+    ImGui::Spacing();
+
+    // ── Widgets ───────────────────────────────────────────────────────────
+    ImGui::TextColored(accent, "WIDGETS");
     ImGui::Separator();
-    ImGui::TextColored(accent, "Widgets");
+    ImGui::TextColored(muted, "Toggle  /  drag to reposition in edit mode (F10)");
+    ImGui::Spacing();
+
     for (auto& layout : profile.widgets) {
         bool enabled = layout.enabled;
         if (ImGui::Checkbox(layout.id.c_str(), &enabled)) {
             layout.enabled = enabled;
             config_.UpdateWidgetLayout(layout);
         }
+        // Per-widget opacity slider on the same line
+        ImGui::SameLine(130.0f);
+        ImGui::PushID(layout.id.c_str());
+        float op = layout.opacity;
+        ImGui::SetNextItemWidth(180.0f);
+        if (ImGui::SliderFloat("opacity", &op, 0.10f, 1.00f, "%.2f")) {
+            layout.opacity = op;
+            config_.UpdateWidgetLayout(layout);
+        }
+        ImGui::PopID();
     }
+    ImGui::Spacing();
 
+    // ── Actions ───────────────────────────────────────────────────────────
+    ImGui::TextColored(accent, "ACTIONS");
     ImGui::Separator();
-    if (ImGui::Button("Save layout")) {
+    if (ImGui::Button("Save layout & settings")) {
         config_.Save();
     }
     ImGui::SameLine();
-    if (ImGui::Button("Close")) {
+    if (ImGui::Button("Reset widget positions")) {
+        config_.ResetWidgetPositions();
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("Close  [F10]")) {
         settings_visible_ = false;
     }
 
-    ImGui::TextDisabled("Insert toggles overlay. F10 opens settings. F11 toggles performance mode.");
+    ImGui::Spacing();
+    ImGui::TextColored(muted, "Insert = toggle overlay   F10 = settings   F11 = perf mode");
     ImGui::End();
 }
 

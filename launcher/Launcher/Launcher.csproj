@@ -10,8 +10,16 @@
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <AssemblyName>Launcher</AssemblyName>
     <Version>1.0.0</Version>
+    <!-- Custom application icon: place lumina.ico in the project directory
+         or generate it from lumina_icon.svg with a tool like Inkscape/ImageMagick.
+         The SVG source is lumina_icon.svg — convert: magick lumina_icon.svg -resize 256x256 lumina.ico -->
+    <ApplicationIcon Condition="Exists('lumina.ico')">lumina.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <None Include="appsettings.json" CopyToOutputDirectory="PreserveNewest" />
+    <!-- SVG icon source (for reference / build scripts) -->
+    <None Include="lumina_icon.svg"/>
+    <!-- ICO file included only if it already exists (generate from SVG first) -->
+    <None Include="lumina.ico" Condition="Exists('lumina.ico')"/>
   </ItemGroup>
 </Project>

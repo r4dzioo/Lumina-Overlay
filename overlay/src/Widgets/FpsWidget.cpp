@@ -34,14 +34,14 @@ void EndWidget(Config::WidgetLayout& layout) {
     ImGui::End();
 }
 
-// Yellow-green accent: #ADFF00
-static constexpr ImVec4 kAccent   = {0.68f, 1.00f, 0.00f, 1.0f};
+// Emerald accent: #22D97E
+static constexpr ImVec4 kAccent   = {0.13f, 0.85f, 0.49f, 1.0f};
 // Dimmer label colour
-static constexpr ImVec4 kLabel    = {0.68f, 1.00f, 0.00f, 0.72f};
+static constexpr ImVec4 kLabel    = {0.13f, 0.85f, 0.49f, 0.72f};
 // Section header (small caps feel)
-static constexpr ImVec4 kHeader   = {0.80f, 0.85f, 0.90f, 0.80f};
+static constexpr ImVec4 kHeader   = {0.80f, 0.88f, 0.92f, 0.80f};
 // Right-aligned status tag colour
-static constexpr ImVec4 kStatus   = {0.68f, 1.00f, 0.00f, 0.90f};
+static constexpr ImVec4 kStatus   = {0.13f, 0.85f, 0.49f, 0.90f};
 
 // Determine a simple stability label based on 1% lows vs avg FPS
 const char* StabilityLabel(float fps, float fps_1_low) {
@@ -104,10 +104,6 @@ void FpsWidget::Render(const Telemetry::MetricSnapshot& snapshot, Config::Widget
 
     // ── Row 3: big numbers ────────────────────────────────────────────────
     {
-        // Scale the big font by temporarily nudging FontGlobalScale
-        // (Dear ImGui doesn't support per-text font sizes without a font atlas,
-        //  so we use a size multiplier trick with Dummy padding instead)
-
         const char* fps_str = "---";
         char fps_buf[16]  = {};
         char ft_buf[16]   = {};
@@ -122,22 +118,19 @@ void FpsWidget::Render(const Telemetry::MetricSnapshot& snapshot, Config::Widget
             snprintf(ft_buf, sizeof(ft_buf), "--.-");
         }
 
-        // Push a 2× scaled font via FontGlobalScale
-        ImGuiIO& io = ImGui::GetIO();
-        const float prev_scale = io.FontGlobalScale;
-        io.FontGlobalScale = prev_scale * 2.0f;
-
+        // Use SetWindowFontScale for big numbers — safer than FontGlobalScale
+        // which can corrupt the draw list when changed mid-frame.
+        ImGui::SetWindowFontScale(2.0f);
         ImGui::TextColored(kAccent, "%s", fps_str);
         ImGui::SameLine(win_w / 2.0f);
         ImGui::TextColored(kAccent, "%s", ft_buf);
-
-        io.FontGlobalScale = prev_scale;
+        ImGui::SetWindowFontScale(1.0f);
     }
 
-    // ── Row 4: stability + "MS / AVG" ─────────────────────────────────────
+    // ── Row 4: stability + units label ────────────────────────────────────
     {
         const char* stability = StabilityLabel(snapshot.fps, snapshot.fps_1_percent_low);
-        ImGui::TextColored(kAccent, "%s", stability);
+        ImGui::TextColored(snapshot.fps_1_percent_low > 0.0f ? kAccent : kLabel, "%s", stability);
         ImGui::SameLine(win_w / 2.0f);
         ImGui::TextColored(kLabel, "MS / AVG");
     }

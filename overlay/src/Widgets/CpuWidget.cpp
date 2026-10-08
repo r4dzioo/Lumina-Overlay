@@ -33,9 +33,9 @@ void EndWidget(Config::WidgetLayout& layout) {
     ImGui::End();
 }
 
-static constexpr ImVec4 kAccent = {0.68f, 1.00f, 0.00f, 1.0f};
-static constexpr ImVec4 kLabel  = {0.68f, 1.00f, 0.00f, 0.65f};
-static constexpr ImVec4 kHeader = {0.80f, 0.85f, 0.80f, 0.80f};
+static constexpr ImVec4 kAccent = {0.13f, 0.85f, 0.49f, 1.0f};
+static constexpr ImVec4 kLabel  = {0.13f, 0.85f, 0.49f, 0.65f};
+static constexpr ImVec4 kHeader = {0.80f, 0.88f, 0.92f, 0.80f};
 
 } // namespace
 
